@@ -1,7 +1,7 @@
 # echo 'starting script for setup one single node k8s cluster ...!' 
 echo 'Setup control plane //!\\'
 
-kubernetes_version=1.23.0-00
+kubernetes_version=1.20.0-00
 # 10.0.2.15
 set -e
 
@@ -51,36 +51,37 @@ echo '=========================================================='
 
 echo 'Installing Runtime ...!'
 
-sudo install -m 0755 -d /etc/apt/keyrings
-curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo gpg --dearmor -o /etc/apt/keyrings/docker.gpg
-sudo chmod a+r /etc/apt/keyrings/docker.gpg
+# sudo install -m 0755 -d /etc/apt/keyrings
+# curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo gpg --dearmor -o /etc/apt/keyrings/docker.gpg
+# sudo chmod a+r /etc/apt/keyrings/docker.gpg
 
 
-echo \
-  "deb [arch="$(dpkg --print-architecture)" signed-by=/etc/apt/keyrings/docker.gpg] https://download.docker.com/linux/ubuntu \
-  "$(. /etc/os-release && echo "$VERSION_CODENAME")" stable" | \
-  sudo tee /etc/apt/sources.list.d/docker.list > /dev/null
+# echo \
+#   "deb [arch="$(dpkg --print-architecture)" signed-by=/etc/apt/keyrings/docker.gpg] https://download.docker.com/linux/ubuntu \
+#   "$(. /etc/os-release && echo "$VERSION_CODENAME")" stable" | \
+#   sudo tee /etc/apt/sources.list.d/docker.list > /dev/null
 
-sudo apt-get update
+# sudo apt-get update
 
-echo 'starting downloading ...!'
+# echo 'starting downloading ...!'
 
-sudo apt-get install -y docker-ce docker-ce-cli containerd.io
+# sudo apt-get install -y containerd.io
 
-echo 'set default setting !'
+# echo 'set default setting !'
 
-# sudo mkdir -p /etc/containerd
-# containerd config default | sudo tee /etc/containerd/config.toml
-containerd config default | sudo tee /etc/containerd/config.toml >/dev/null 2>&1
+# # sudo mkdir -p /etc/containerd
+# # containerd config default | sudo tee /etc/containerd/config.toml
+# containerd config default | sudo tee /etc/containerd/config.toml >/dev/null 2>&1
 
-sudo sed -i 's/SystemdCgroup \= false/SystemdCgroup \= true/g' /etc/containerd/config.toml
+# sudo sed -i 's/SystemdCgroup \= false/SystemdCgroup \= true/g' /etc/containerd/config.toml
 
-echo 'Start & Enable containerd !'
+# echo 'Start & Enable containerd !'
 
-# sudo systemctl enable --now containerd
+# # sudo systemctl enable --now containerd
+sudo apt-get install -y docker.io containerd=1.2.6-0ubuntu1
 
-sudo systemctl restart containerd
-sudo systemctl enable containerd
+sudo systemctl start docker
+sudo systemctl enable docker
 
 echo '==========================================================' 
 
@@ -95,6 +96,8 @@ echo '=========================================================='
 echo 'update old packages one more time...!'
 
 sudo apt-get update -y 
+
+echo '==========================================================' 
 
 echo 'Installing KUBECTL , KUBELET AND KUBEADM ...! '
 
@@ -116,11 +119,9 @@ echo '=========================================================='
 
 echo 'Execute kubeadm init ...!'
 
-echo 'set the control plane ip address ...!'
-
-read MASTER_IP
-
-sudo kubeadm init --apiserver-advertise-address=${MASTER_IP} --pod-network-cidr=10.244.0.0/16 
+sudo kubeadm reset 
+# --apiserver-advertise-address=${MASTER_IP} 
+sudo kubeadm init --pod-network-cidr=10.244.0.0/16 
 
 echo '==========================================================' 
 
