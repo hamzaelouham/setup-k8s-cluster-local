@@ -1,5 +1,5 @@
 # echo 'starting script for setup one single node k8s cluster ...!' 
-echo 'Setup control plane //!\\'
+echo 'Setup worker node //!\\'
 
 kubernetes_version=1.23.0-00
 # 10.0.2.15
@@ -110,33 +110,7 @@ echo 'enable kubelet deoman ...!'
 
 sudo systemctl enable kubelet 
 
-sleep 6
-
 echo '==========================================================' 
-
-echo 'Execute kubeadm init ...!'
-
-echo 'set the control plane ip address ...!'
-
-read MASTER_IP
-
-sudo kubeadm init --apiserver-advertise-address=${MASTER_IP} --pod-network-cidr=10.244.0.0/16 
-
-echo '==========================================================' 
-
-
-# sudo -u vagrant -H bash -c 
-mkdir -p $HOME/.kube
-
-sudo cp -i /etc/kubernetes/admin.conf $HOME/.kube/config
-
-sudo chown $(id -u):$(id -g) $HOME/.kube/config
-
-echo '==========================================================' 
-
-echo 'Installing Flannel for network ...!'
-
-kubectl apply -f https://raw.githubusercontent.com/coreos/flannel/master/Documentation/kube-flannel.yml
 
 echo 'finishing .../!\'
 
