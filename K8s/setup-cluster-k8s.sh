@@ -1,6 +1,7 @@
 echo 'starting script for setup one single node k8s cluster ...!' 
 
 kubernetes_version=1.23.0-00
+# 10.0.2.15
 
 set -e
 
@@ -123,9 +124,6 @@ sudo kubeadm init --apiserver-advertise-address=${MASTER_IP} --pod-network-cidr=
 
 echo '==========================================================' 
 
-echo 'exit sudo to normal user '
-
-# exit
 
 # sudo -u vagrant -H bash -c 
 mkdir -p $HOME/.kube
