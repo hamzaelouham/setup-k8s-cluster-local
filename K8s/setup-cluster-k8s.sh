@@ -1,5 +1,7 @@
 echo 'starting script for setup one single node k8s cluster ...!' 
 
+kubernetes_version=1.23.0-00
+
 set -e
 
 echo '==========================================================' 
@@ -95,7 +97,7 @@ sudo apt-get update -y
 
 echo 'Installing KUBECTL , KUBELET AND KUBEADM ...! '
 
-sudo apt-get install -y kubelet kubeadm kubectl
+sudo apt-get install -y kubelet=${kubernetes_version} kubeadm=${kubernetes_version} kubectl=${kubernetes_version}
 
 echo '==========================================================' 
 
