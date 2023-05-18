@@ -10,14 +10,14 @@ Vagrant.configure("2") do |config|
     end
   end
 
-#   config.vm.define "slave" do |slave|
-#     slave.vm.box = "bento/ubuntu-18.04"
-#     slave.vm.hostname = "slave"
-#     slave.vm.network "private_network", ip: "172.16.1.11"
+  # config.vm.define "slave" do |slave|
+  #   slave.vm.box = "bento/ubuntu-18.04"
+  #   slave.vm.hostname = "slave"
+  #   slave.vm.network "private_network", ip: "172.16.1.11"
 
-#     slave.vm.provider :virtualbox do |vb|
-#       vb.customize ["modifyvm", :id, "--memory", 2048]
-#       vb.customize ["modifyvm", :id, "--cpus", 2]
-#     end
-#   end
-# end
+  #   slave.vm.provider :virtualbox do |vb|
+  #     vb.customize ["modifyvm", :id, "--memory", 2048]
+  #     vb.customize ["modifyvm", :id, "--cpus", 2]
+  #   end
+  # end
+end
