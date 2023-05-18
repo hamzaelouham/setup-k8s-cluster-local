@@ -19,3 +19,32 @@ containerd config default > /etc/containerd/config.toml
 sudo sed -i 's/SystemdCgroup \= false/SystemdCgroup \= true/g' /etc/containerd/config.toml
 sudo systemctl restart containerd
 sudo systemctl enable containerd >/dev/null 2>&1
+
+
+# sudo install -m 0755 -d /etc/apt/keyrings
+# curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo gpg --dearmor -o /etc/apt/keyrings/docker.gpg
+# sudo chmod a+r /etc/apt/keyrings/docker.gpg
+
+
+# echo \
+#   "deb [arch="$(dpkg --print-architecture)" signed-by=/etc/apt/keyrings/docker.gpg] https://download.docker.com/linux/ubuntu \
+#   "$(. /etc/os-release && echo "$VERSION_CODENAME")" stable" | \
+#   sudo tee /etc/apt/sources.list.d/docker.list > /dev/null
+
+# sudo apt-get update
+
+# echo 'starting downloading ...!'
+
+# sudo apt-get install -y containerd.io
+
+# echo 'set default setting !'
+
+# # sudo mkdir -p /etc/containerd
+# # containerd config default | sudo tee /etc/containerd/config.toml
+# containerd config default | sudo tee /etc/containerd/config.toml >/dev/null 2>&1
+
+# sudo sed -i 's/SystemdCgroup \= false/SystemdCgroup \= true/g' /etc/containerd/config.toml
+
+# echo 'Start & Enable containerd !'
+
+# # sudo systemctl enable --now containerd

@@ -50,37 +50,29 @@ sudo sysctl --system
 echo '==========================================================' 
 
 echo 'Installing Runtime ...!'
+sudo apt-get install -y containerd
 
-sudo install -m 0755 -d /etc/apt/keyrings
-curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo gpg --dearmor -o /etc/apt/keyrings/docker.gpg
-sudo chmod a+r /etc/apt/keyrings/docker.gpg
+cat <<EOF | sudo tee /etc/modules-load.d/containerd.conf
+overlay
+br_netfilter
+EOF
 
+echo 'Adding netfilter ...!'
+sudo modprobe overlay
+sudo modprobe br_netfilter
 
-echo \
-  "deb [arch="$(dpkg --print-architecture)" signed-by=/etc/apt/keyrings/docker.gpg] https://download.docker.com/linux/ubuntu \
-  "$(. /etc/os-release && echo "$VERSION_CODENAME")" stable" | \
-  sudo tee /etc/apt/sources.list.d/docker.list > /dev/null
+clear
+echo 'Starting Containerd ...!'
 
-sudo apt-get update
+sudo mkdir -p /etc/containerd
 
-echo 'starting downloading ...!'
-
-sudo apt-get install -y docker-ce docker-ce-cli containerd.io
-
-echo 'set default setting !'
-
-# sudo mkdir -p /etc/containerd
-# containerd config default | sudo tee /etc/containerd/config.toml
-containerd config default | sudo tee /etc/containerd/config.toml >/dev/null 2>&1
+containerd config default | sudo tee /etc/containerd/config.toml
 
 sudo sed -i 's/SystemdCgroup \= false/SystemdCgroup \= true/g' /etc/containerd/config.toml
 
-echo 'Start & Enable containerd !'
-
-# sudo systemctl enable --now containerd
-
 sudo systemctl restart containerd
 sudo systemctl enable containerd
+
 
 echo '==========================================================' 
 
@@ -102,13 +94,13 @@ sudo apt-get install -y kubelet=${kubernetes_version} kubeadm=${kubernetes_versi
 
 echo '==========================================================' 
 
-echo 'starting kubelet deoman ...!'
+# echo 'starting kubelet deoman ...!'
 
-sudo systemctl start kubelet 
+# sudo systemctl start kubelet 
 
-echo 'enable kubelet deoman ...!'
+# echo 'enable kubelet deoman ...!'
 
-sudo systemctl enable kubelet 
+# sudo systemctl enable kubelet 
 
 echo '==========================================================' 
 

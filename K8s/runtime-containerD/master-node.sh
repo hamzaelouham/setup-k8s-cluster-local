@@ -1,7 +1,6 @@
+kubernetes_version=1.20.0-00
 # echo 'starting script for setup one single node k8s cluster ...!' 
 echo 'Setup control plane //!\\'
-
-kubernetes_version=1.20.0-00
 # 10.0.2.15
 set -e
 
@@ -14,6 +13,7 @@ sudo apt-get update -y
 echo 'installing addition packages ...!'
 
 sudo apt-get install -y apt-transport-https ca-certificates curl gnupg
+clear
 
 echo '==========================================================' 
 
@@ -29,12 +29,6 @@ sudo ufw disable
 
 echo '==========================================================' 
 
-echo 'enable net fillter ...! '
-
-sudo modprobe br_netfilter
-
-echo '==========================================================' 
-
 sudo cat <<EOF | sudo tee /etc/sysctl.d/k8s.conf
 net.bridge.bridge-nf-call-ip6tables = 1
 net.bridge.bridge-nf-call-iptables = 1
@@ -44,44 +38,39 @@ EOF
 echo '==========================================================' 
  
 echo 'presist config across reboot ...!'
-
+sudo sed -i 's/^#net.ipv4.ip_forward=1/net.ipv4.ip_forward=1/' /etc/sysctl.d/99-sysctl.conf
 sudo sysctl --system
+
+sleep 6
+clear
 
 echo '==========================================================' 
 
-echo 'Installing Runtime ...!'
+echo 'Installing Container Runtime ...!'
 
-# sudo install -m 0755 -d /etc/apt/keyrings
-# curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo gpg --dearmor -o /etc/apt/keyrings/docker.gpg
-# sudo chmod a+r /etc/apt/keyrings/docker.gpg
+sudo apt-get install -y containerd
 
+cat <<EOF | sudo tee /etc/modules-load.d/containerd.conf
+overlay
+br_netfilter
+EOF
 
-# echo \
-#   "deb [arch="$(dpkg --print-architecture)" signed-by=/etc/apt/keyrings/docker.gpg] https://download.docker.com/linux/ubuntu \
-#   "$(. /etc/os-release && echo "$VERSION_CODENAME")" stable" | \
-#   sudo tee /etc/apt/sources.list.d/docker.list > /dev/null
+echo 'Adding netfilter ...!'
+sudo modprobe overlay
+sudo modprobe br_netfilter
 
-# sudo apt-get update
+clear
+echo 'Starting Containerd ...!'
 
-# echo 'starting downloading ...!'
+sudo mkdir -p /etc/containerd
 
-# sudo apt-get install -y containerd.io
+containerd config default | sudo tee /etc/containerd/config.toml
 
-# echo 'set default setting !'
+sudo sed -i 's/SystemdCgroup \= false/SystemdCgroup \= true/g' /etc/containerd/config.toml
 
-# # sudo mkdir -p /etc/containerd
-# # containerd config default | sudo tee /etc/containerd/config.toml
-# containerd config default | sudo tee /etc/containerd/config.toml >/dev/null 2>&1
+sudo systemctl restart containerd
+sudo systemctl enable containerd
 
-# sudo sed -i 's/SystemdCgroup \= false/SystemdCgroup \= true/g' /etc/containerd/config.toml
-
-# echo 'Start & Enable containerd !'
-
-# # sudo systemctl enable --now containerd
-sudo apt-get install -y docker.io containerd=1.2.6-0ubuntu1
-
-sudo systemctl start docker
-sudo systemctl enable docker
 
 echo '==========================================================' 
 
@@ -102,27 +91,27 @@ echo '=========================================================='
 echo 'Installing KUBECTL , KUBELET AND KUBEADM ...! '
 
 sudo apt-get install -y kubelet=${kubernetes_version} kubeadm=${kubernetes_version} kubectl=${kubernetes_version}
+clear
+# echo '==========================================================' 
 
-echo '==========================================================' 
+# echo 'starting kubelet deoman ...!'
 
-echo 'starting kubelet deoman ...!'
+# sudo systemctl start kubelet 
 
-sudo systemctl start kubelet 
+# echo 'enable kubelet deoman ...!'
 
-echo 'enable kubelet deoman ...!'
+# sudo systemctl enable kubelet 
 
-sudo systemctl enable kubelet 
-
-sleep 6
-
+# sleep 6
+# clear
 echo '==========================================================' 
 
 echo 'Execute kubeadm init ...!'
 
-sudo kubeadm reset 
+sudo kubeadm reset
 # --apiserver-advertise-address=${MASTER_IP} 
-sudo kubeadm init --pod-network-cidr=10.244.0.0/16 
-
+sudo kubeadm init  --apiserver-advertise-address=172.16.1.10 --pod-network-cidr=10.244.0.0/16 --cri-socket=unix:///var/run/containerd/containerd.sock
+clear
 echo '==========================================================' 
 
 
@@ -132,7 +121,7 @@ mkdir -p $HOME/.kube
 sudo cp -i /etc/kubernetes/admin.conf $HOME/.kube/config
 
 sudo chown $(id -u):$(id -g) $HOME/.kube/config
-
+clear
 echo '==========================================================' 
 
 echo 'Installing Flannel for network ...!'
