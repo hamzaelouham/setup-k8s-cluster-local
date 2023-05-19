@@ -1,4 +1,4 @@
-kubernetes_version=1.20.1-00
+kubernetes_version=1.19.1-00
 OS="xUbuntu_18.04"
 # crio version 
 VERSION="1.23"
