@@ -108,9 +108,9 @@ echo '=========================================================='
 
 echo 'Installing KUBECTL , KUBELET AND KUBEADM ...! '
 
-apt-get install -y kubelet=${kubernetes_version} kubeadm=${kubernetes_version} kubectl=${kubernetes_version}
+apt-get install -y kubelet=${kubernetes_version} kubeadm=${kubernetes_version} kubectl=${kubernetes_version} 
 
-apt-mark hold kubelet kubeadm kubectl
+# apt-mark hold kubelet kubeadm kubectl
 clear
 
 echo '==========================================================' 
