@@ -15,7 +15,9 @@
     tasks:
   
       - name: disable swapping
-        shell: swapoff -a
+        shell: |
+               sudo swapoff -a
+               sudo sed -i '/ swap / s/^\(.*\)$/#\1/g' /etc/fstab
 
       - name: kernel modules 1
         shell: modprobe overlay
@@ -108,5 +110,9 @@
           update_cache: true
           state: present  
 
-      - name: initialize kubeadm 
-        shell: kubeadm init --pod-network-cidr=10.244.0.0/16      
+  - name: initialize cluster using kubeadm 
+  - hosts: master
+    become: true
+    tasks:
+        - name: runnig kubeadm init 
+          shell: kubeadm init --pod-network-cidr=10.244.0.0/16      
