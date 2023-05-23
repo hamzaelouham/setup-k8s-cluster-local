@@ -6,7 +6,13 @@
       - name: Update cache 
         apt:
           update_cache: yes
-          cache_valid_time: 3600
-      - name: install net-tools
-        apt: name=net-tools state=absent
+      - name: install some plugin
+        apt: 
+         name: ['apt-transport-https', 'ca-certificates']
+         state: absent
+         update_cache: yes
+        
+        
+
+
       
