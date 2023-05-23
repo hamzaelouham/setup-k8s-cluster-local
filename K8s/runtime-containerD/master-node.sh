@@ -1,4 +1,4 @@
-kubernetes_version=1.20.0-00
+kubernetes_version=1.24.0-00
 # echo 'starting script for setup one single node k8s cluster ...!' 
 echo 'Setup control plane //!\\'
 # 10.0.2.15

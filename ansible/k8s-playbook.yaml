@@ -57,5 +57,56 @@
         - { regexp: 'overlay', line: 'overlay' }
         - { regexp: 'br_netfilter', line: 'br_netfilter' }      
 
+      - name: Install Docker apt key
+        apt_key:
+          url: https://download.docker.com/linux/ubuntu/gpg
+          state: present
 
-      
+      - name: Add containerd repository
+        apt_repository:
+          repo: "deb [arch=amd64] https://download.docker.com/linux/ubuntu bionic stable"
+          state: present
+          update_cache: true
+      - name: Install containerd
+        apt: 
+          name: containerd.io
+          #name: containerd.io=1.4.6-1
+          update_cache: true
+          state: present 
+
+      - name: Ensure containerd is initialized
+        shell: containerd config default > /etc/containerd/config.toml
+
+      - name: Set containerd options
+        lineinfile:
+          path: /etc/containerd/config.toml
+          insertafter: '^(\s+)\[plugins.+\w\.runc\.options\]'
+          line: '            SystemdCgroup = true'
+        
+      - name: Start containerd service
+        service:
+          name: containerd
+          state: started   
+      - name: enable containerd service
+        service:
+          name: containerd
+          enabled: yes 
+      - name: Install Kubernetes apt key
+        apt_key:
+          url: https://packages.cloud.google.com/apt/doc/apt-key.gpg
+          state: present
+
+      - name: Add Kubernetes repository
+        apt_repository:
+          repo: "deb https://apt.kubernetes.io/ kubernetes-xenial main"
+          state: present
+          update_cache: true 
+
+      - name: Install Kubernetes tools
+        apt: 
+          name: ['kubelet=1.24.0-00', 'kubeadm=1.24.0-00', 'kubectl=1.24.0-00', 'open-iscsi']
+          update_cache: true
+          state: present  
+
+      - name: initialize kubeadm 
+        shell: kubeadm init --pod-network-cidr=10.244.0.0/16      
