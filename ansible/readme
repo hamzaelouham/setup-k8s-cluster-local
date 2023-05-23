@@ -1,0 +1,16 @@
+generate ssh key : 
+ 
+1- run flowing command in controler machine : 'ssh-keygen'
+2- run flowing command to authntifacte : ssh-copy-id -i ~/.ssh/id_rsa.pub username@172.16.1.11
+
+use ping module to check connection : 
+  ansible -i inventory -u vagrant -m ping all
+
+run first ad-hoc cmd : 
+   ansible -i inventory -u vagrant -a 'cat /etc/os-release' all
+
+check playbook yaml syntax : 
+  ansible-playbook playbook.yaml --syntax-check
+  ansible-playbook -i inventory  playbook.yaml --syntax-check
+
+

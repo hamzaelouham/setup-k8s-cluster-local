@@ -1,0 +1,4 @@
+[nodes]
+172.16.1.11
+[nodes:vars]
+ansible_user=vagrant
